@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+test.py
+*.egg-info
+*.toml
+.lock
+
+.venv
+# .env 
+.python-version
+test.py
+
+!credentials/
+credentials/*

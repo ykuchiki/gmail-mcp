@@ -71,6 +71,7 @@ uv pip install -r requirements.txt
 ```
 
 4. Set up OAuth credentials
+   - Create a directory named credentials in the root of the project
    - Create a project in [Google Cloud Console](https://console.cloud.google.com/)
    - Enable the Gmail API
    - Create OAuth credentials
@@ -85,7 +86,7 @@ Please refer to your MCP client's official documentation for specific instructio
             "command": "uv",
             "args": [
                 "--directory",
-                "/path/to/your/gmail-mcp",
+                "/path/to/your/gmail-mcp/src",
                 "run",
                 "main.py"
             ]
@@ -161,6 +162,7 @@ uv pip install -r requirements.txt
 ```
 
 4. OAuth認証情報の設定
+   - 最初にプロジェクトのルートディレクトリ直下にcredentialsディレクトリを作成
    - [Google Cloud Console](https://console.cloud.google.com/)でプロジェクトを作成
    - Gmail APIを有効化
    - OAuth認証情報を作成

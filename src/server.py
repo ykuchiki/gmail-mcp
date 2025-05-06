@@ -13,7 +13,7 @@ from tools import (
 )
 
 # 設定
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 CREDENTIALS_DIR = BASE_DIR / "credentials"
 OAUTH_KEYS = os.getenv("GMAIL_OAUTH_PATH", str(CREDENTIALS_DIR / "client_secret_gmail_oauth.json"))
 CRED_PATH = os.getenv("GMAIL_CREDENTIALS_PATH", str(CREDENTIALS_DIR / "credentials.json"))

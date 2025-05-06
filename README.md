@@ -1,7 +1,7 @@
 # Gmail MCP
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ykuchiki/gmail-mcp/main/assets/gmail-mcp-logo.png" alt="Gmail MCP Logo" width="200">
+  <img src="https://github.com/ykuchiki/gmail-mcp/blob/main/assets/gmail-mcp-logo.png" alt="Gmail MCP Logo" width="200">
 </p>
 
 <p align="center">
@@ -176,7 +176,7 @@ uv pip install -r requirements.txt
             "command": "uv",
             "args": [
                 "--directory",
-                "/path/to/your/gmail-mcp",
+                "/path/to/your/gmail-mcp/src",
                 "run",
                 "main.py"
             ]
@@ -197,3 +197,8 @@ uv run main.py
 ### 📄 ライセンス
 
 このプロジェクトはMITライセンスの下で提供されています - 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
+
+
+### TODO
+- [ ] 基本機能実装
+- [ ] search_emailsで送信メールIDは除外or違う方法で実装

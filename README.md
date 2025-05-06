@@ -200,5 +200,5 @@ uv run main.py
 
 
 ### TODO
-- [×] 基本機能実装
+- [ × ] 基本機能実装
 - [ ] search_emailsで送信メールIDは除外or違う方法で実装

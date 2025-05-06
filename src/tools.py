@@ -241,7 +241,7 @@ async def delete_email(args: Dict[str, Any]) -> str:
 # --- Tools: ラベル操作 ---
 async def modify_label(args: Dict[str, Any]) -> str:
     """
-    メッセージにラベルを追加または削除します。
+    メッセージIDを受け取り該当のメールにラベルを追加または削除します。
 
     Args:
         args (Dict[str, Any]):
@@ -279,11 +279,12 @@ async def create_label_tool(args: Dict[str, Any]) -> str:
         str: 作成結果メッセージ。
     """
     lbl = create_label(
-        gmail_utils.service, args["name"],
+        gmail_utils.service,
+        args["name"],
         args.get("messageListVisibility", "show"),
         args.get("labelListVisibility", "labelShow")
     )
-    return f"Label created: {lbl.id}: {lbl.name}"
+    return f"Label created: {lbl['id']}: {lbl['name']}"
 
 
 async def delete_label_tool(args: Dict[str, Any]) -> str:
@@ -297,8 +298,12 @@ async def delete_label_tool(args: Dict[str, Any]) -> str:
     Returns:
         str: 削除結果メッセージ。
     """
-    lbl = delete_label(gmail_utils.service, args["name"])
-    return f"Label deleted: {lbl.id}: {lbl.name}"
+    label = find_label_by_name(gmail_utils.service, args["name"])
+    if not label:
+        raise ValueError(f"Label '{args['name']}' not found")
+    
+    result = delete_label(gmail_utils.service, label.id)
+    return result["message"]
 
 
 async def list_labels_tool() -> str:
@@ -312,7 +317,7 @@ async def list_labels_tool() -> str:
         str: ラベル名(ID)とタイプ一覧を改行区切りで返す。
     """
     lbls = list_labels(gmail_utils.service)
-    lines = [f"{l.name} (ID: {l.id}), Type: {l.type}" for l in lbls]
+    lines = [f"{l['name']} (ID: {l['id']}), Type: {l['type']}" for l in lbls["all"]]
     return "\n".join(lines)
 
 
@@ -341,16 +346,86 @@ async def update_label_tool(args: Dict[str, Any]) -> str:
     """
     指定ラベルの設定を更新します。
 
+    対象ラベルは名前で検索し、以下の属性を更新可能：
+    - name: ラベルの表示名(必須)
+    - messageListVisibility: メール一覧での表示設定 ("show" / "hide")
+    - labelListVisibility: ラベル一覧での表示設定 ("labelShow" / "labelHide" / "labelShowIfUnread")
+    - color: ラベルの色設定（textColor / backgroundColor を持つ dict）
+        - 背景色（backgroundColor）: 
+            #ac2b16, #cc3a21, #eaa041, #f2c960, #16a766, #43d692,
+            #3c78d8, #4986e7, #8e63ce, #b99aff, #f691b2, #e07798,
+            #616161, #a4c2f4, #d0bcf1, #fbc8d9, #f6c5be, #e4d7f5,
+            #fad165, #fef1d1, #c6f3de, #a0eac9, #c9daf8, #b3efd3
+        - 文字色（textColor）: 
+            #ffffff, #000000
+
     Args:
         args (Dict[str, Any]):
-            - name (str): 更新対象ラベル名。
-            - updates (Dict[str, Any]): 更新内容の辞書。
-
-    Returns:
-        str: 更新結果メッセージ。
+            - name (str): 更新対象ラベル名（既存ラベルの名前）
+            - updates (Dict[str, Any]): 更新内容（上記フィールドのいずれか）
     """
-    lbl = update_label(gmail_utils.service, args["name"], args["updates"])
-    return f"Label updated: {lbl.id}: {lbl.name}"
+    # 1) ネストされている場合があるので一度ほどく
+    params = args.get("args", args)
+
+    # 2) 必須フィールドのチェック
+    name = params.get("name")
+    if not name:
+        raise ValueError("Missing required argument: 'name'")
+
+    label = find_label_by_name(gmail_utils.service, name)
+    if not label:
+        raise ValueError(f"Label '{name}' not found")
+    label_id = label.id
+
+    # 3) updates の取り出し
+    raw_updates = params.get("updates")
+    if not isinstance(raw_updates, dict):
+        raise ValueError("Missing or invalid 'updates' argument")
+
+    # 4) 許可するトップレベルキー
+    allowed_top = {"name", "messageListVisibility", "labelListVisibility", "color"}
+    allowed_backgrounds = {
+        "#ac2b16","#cc3a21","#eaa041","#f2c960","#16a766","#43d692",
+        "#3c78d8","#4986e7","#8e63ce","#b99aff","#f691b2","#e07798",
+        "#616161","#a4c2f4","#d0bcf1","#fbc8d9","#f6c5be","#e4d7f5",
+        "#fad165","#fef1d1","#c6f3de","#a0eac9","#c9daf8","#b3efd3"
+    }
+    allowed_texts = {"#ffffff", "#000000"}
+
+    updates: Dict[str, Any] = {}
+    for k, v in raw_updates.items():
+        if k not in allowed_top:
+            continue
+        if k == "color":
+            if not isinstance(v, dict):
+                continue
+            color_updates: Dict[str, str] = {}
+            if "textColor" in v:
+                if v["textColor"] not in allowed_texts:
+                    raise ValueError(f"Invalid textColor: {v['textColor']}")
+                color_updates["textColor"] = v["textColor"]
+            if "backgroundColor" in v:
+                if v["backgroundColor"] not in allowed_backgrounds:
+                    raise ValueError(f"Invalid backgroundColor: {v['backgroundColor']}")
+                color_updates["backgroundColor"] = v["backgroundColor"]
+            if color_updates:
+                updates["color"] = color_updates
+        else:
+            updates[k] = v
+
+    if not updates:
+        raise ValueError("No valid update fields provided")
+
+    # 5) 実際に更新
+    try:
+        updated = update_label(gmail_utils.service, label_id, updates)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise RuntimeError(f"update_label failed. updates={updates!r}, error={e!r}")
+
+    name_display = updated.get("name") or label.name
+    return f"Label updated: {updated.get('id', 'unknown')}: {name_display}"
 
 
 async def find_label_by_name_tool(args: Dict[str, Any]) -> str:

@@ -90,14 +90,18 @@ def update_label(service: Resource,
         Dict[str, Any]: 更新されたラベルの情報
     """
     try:
-        service.users().labels().get(userId="me", labelId=label_id).execute()
-        response = service.users().labels().update(userId="me", labelId=label_id, body=updates).execute()
+        # パスパラメータとして渡すキーは id
+        service.users().labels().get(userId="me", id=label_id).execute()
+        response = service.users().labels().update(
+            userId="me", id=label_id, body=updates
+        ).execute()
         return response
     except HttpError as error:
         if error.status_code == 404:
             raise ValueError(f"Label with ID '{label_id}' not found")
         raise ValueError(f"Failed to update label: {error}")
     
+
 
 def delete_label(service: Resource, label_id: str) -> Dict[str, Any]:
     """
@@ -111,10 +115,10 @@ def delete_label(service: Resource, label_id: str) -> Dict[str, Any]:
         Dict[str, Any]: 削除されたラベルの情報
     """
     try:
-        data = service.users().labels().get(userId="me", labelId=label_id).execute()
+        data = service.users().labels().get(userId="me", id=label_id).execute()
         if data.get("type") == "system":
             raise ValueError(f"Cannot delete system label '{label_id}'")
-        service.users().labels().delete(userId="me", labelId=label_id).execute()
+        service.users().labels().delete(userId="me", id=label_id).execute()
         return {"success": True, "message": f"Label '{data.get('name')}' deleted successfully"}
     except HttpError as error:
         if error.status_code == 404:
@@ -173,8 +177,8 @@ def find_label_by_name(service: Resource, label_name: str) -> Optional[GmailLabe
             ) if color_data else None
             return GmailLabel(
                 id=data.get("id"),
-                name=data["name"],      # キーが存在しないならKeyError
-                type=data.get("type"),  # キーが存在しないならNone
+                name=data["name"],
+                type=data.get("type"),
                 messageListVisibility=data.get("messageListVisibility"),
                 labelListVisibility=data.get("labelListVisibility"),
                 messagesTotal=data.get("messagesTotal"),
@@ -201,6 +205,23 @@ def get_or_create_label(service: Resource,
     Returns:
         GmailLabel: ラベルのインスタンス
     """
-    existing: bool = find_label_by_name(service, label_name)
-    if existing: return existing
-    return create_label(service, label_name, message_list_visibility, label_list_visibility)
+    existing = find_label_by_name(service, label_name)
+    if existing:
+        return existing
+    raw = create_label(service, label_name, message_list_visibility, label_list_visibility)
+    # create_label の戻り値が dict なので GmailLabel に変換
+    color_data = raw.get("color", {})
+    color = LabelColor(
+        textColor=color_data.get("textColor"),
+        backgroundColor=color_data.get("backgroundColor"),
+    ) if color_data else None
+    return GmailLabel(
+        id=raw.get("id"),
+        name=raw.get("name"),
+        type=raw.get("type"),
+        messageListVisibility=raw.get("messageListVisibility"),
+        labelListVisibility=raw.get("labelListVisibility"),
+        messagesTotal=raw.get("messagesTotal"),
+        messagesUnread=raw.get("messagesUnread"),
+        color=color,
+    )

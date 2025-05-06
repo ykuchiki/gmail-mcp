@@ -11,8 +11,8 @@ from googleapiclient.discovery import build, Resource
 
 service: Optional[Resource] = None
 
-async def load_credentials(config_path: str, cred_path: str, oauth_path: str, scopes: List[str]) -> None:
-    """OAuth2.0 クレデンシャルを読み込み/更新し、Gmail APIクライアントを初期化する"""
+def load_credentials(config_path: str, cred_path: str, oauth_path: str, scopes: List[str]) -> None:
+    """OAuth2.0 credentialsを読み込み/更新し、Gmail APIクライアントを初期化する"""
     # exist_ok=True: ディレクトリが存在しない場合は作成, Falseの場合はディレクトリが存在しない場合はエラー
     os.makedirs(config_path, exist_ok=True)
     creds = None
@@ -61,7 +61,7 @@ def validate_email(email: str) -> bool:
 def create_email_message(args: Dict[str, Any]) -> str:
     """
     引数で渡されたメール情報をもとに
-    SMTPで送信可能なプレーンテキスト形式のMIMEメール本文を文字列で構築する
+    SMTPで送信可能なプレーンテキスト形式のMIMEメールを文字列で構築する
 
     args のキー:
         - from: 送信者アドレス (str)

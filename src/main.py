@@ -1,7 +1,6 @@
 """
 main.py - Gmail MCP Serverエントリーポイント
 """
-import asyncio
 from dotenv import load_dotenv
 
 from server import create_server, init_gmail_credentials
@@ -12,7 +11,7 @@ load_dotenv()
 def main():
     """メイン実行関数"""
     # Gmail認証
-    asyncio.run(init_gmail_credentials())
+    init_gmail_credentials()
     
     # サーバー作成
     server = create_server()

@@ -21,7 +21,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 def create_server() -> FastMCP:
     """MCP サーバーの作成とツール登録"""
-    server = FastMCP("gmail", version="1.0.0")
+    server = FastMCP("gmail", version="1.0.1")
     
     # ツール登録
     server.tool()(send_email)
@@ -39,10 +39,10 @@ def create_server() -> FastMCP:
     
     return server
 
-async def init_gmail_credentials():
+def init_gmail_credentials():
     """Gmail認証を行う"""
-    await gmail_utils.load_credentials(
-        config_path=os.getenv("GMAIL_CONFIG_PATH", str(BASE_DIR)),
+    gmail_utils.load_credentials(
+        config_path=BASE_DIR,
         cred_path=CRED_PATH,
         oauth_path=OAUTH_KEYS,
         scopes=SCOPES

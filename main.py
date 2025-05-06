@@ -4,7 +4,7 @@ main.py - Gmail MCP Serverエントリーポイント
 import asyncio
 from dotenv import load_dotenv
 
-from server import create_server, init_gmail_credentials
+from src.server import create_server, init_gmail_credentials
 
 # 環境変数のロード
 load_dotenv()

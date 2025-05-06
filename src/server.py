@@ -6,7 +6,7 @@ from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 import utils.gmail_utils as gmail_utils
-from tools import (
+from src.tools import (
     send_email, create_draft, read_email, search_emails, delete_email,
     modify_label, create_label_tool, delete_label_tool, list_labels_tool,
     get_or_create_label_tool, update_label_tool, find_label_by_name_tool

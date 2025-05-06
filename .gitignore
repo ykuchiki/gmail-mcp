@@ -7,7 +7,8 @@ wheels/
 test.py
 *.egg-info
 *.toml
-.lock
+*.lock
+.DS_Store
 
 .venv
 # .env 

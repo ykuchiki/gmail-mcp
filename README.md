@@ -1,7 +1,7 @@
 # Gmail MCP
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ykuchiki/gmail-mcp/main/assets/gmail-mcp-logo.png" alt="Gmail MCP Logo" width="200">
+  <img src="https://raw.githubusercontent.com/ykuchiki/gmail-mcp/assets/gmail-mcp-logo.png" alt="Gmail MCP Logo" width="200">
 </p>
 
 <p align="center">

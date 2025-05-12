@@ -75,6 +75,10 @@ uv pip install -r requirements.txt
    - Create a project in [Google Cloud Console](https://console.cloud.google.com/)
    - Enable the Gmail API
    - Create OAuth credentials
+   - Add the following URI to the **Authorized redirect URIs**:
+     ```
+     http://localhost:8080/
+     ```
    - Download the credentials JSON file and save it as `credentials/client_secret_gmail_oauth.json`
 
 5. Add MCP server
@@ -166,6 +170,10 @@ uv pip install -r requirements.txt
    - [Google Cloud Console](https://console.cloud.google.com/)でプロジェクトを作成
    - Gmail APIを有効化
    - OAuth認証情報を作成
+   - **認証済みのリダイレクトURI**に以下を追加:
+     ```
+     http://localhost:8080/
+     ```
    - 認証情報JSONファイルをダウンロードし、`credentials/client_secret_gmail_oauth.json`として保存
 
 5. MCPサーバーを追加

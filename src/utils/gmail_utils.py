@@ -17,8 +17,12 @@ def load_credentials(config_path: str, cred_path: str, oauth_path: str, scopes: 
     os.makedirs(config_path, exist_ok=True)
     creds = None
     if os.path.exists(cred_path):
+        try:
         # cred_pathあるcredentias.jsonからGoogle APIにアクセスできるトークン情報を読み込んでCredentialsオブジェクトを作成
-        creds = Credentials.from_authorized_user_file(cred_path, scopes)
+            creds = Credentials.from_authorized_user_file(cred_path, scopes)
+        except ValueError:
+            os.remove(cred_path)
+            creds = None
     if not creds or not creds.valid:
         # トークン情報がないか期限切れの場合は新しく作成
         if creds and creds.expired and creds.refresh_token:
@@ -28,7 +32,7 @@ def load_credentials(config_path: str, cred_path: str, oauth_path: str, scopes: 
             # トークン情報がないか期限切れで、リフレッシュトークンがない場合は認証サーバーにアクセスして認証
             flow = InstalledAppFlow.from_client_secrets_file(oauth_path, scopes)
             # 認証サーバーにアクセスして認証
-            creds = flow.run_local_server(port=8080)
+            creds = flow.run_local_server(port=8080, access_type='offline', propmt='consent')
         with open(cred_path, "w") as token:
             token.write(creds.to_json())
     global service

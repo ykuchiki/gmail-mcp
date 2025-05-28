@@ -14,7 +14,7 @@
 
 <p align="center">
   <b>Gmail API for AI assistants using Model Context Protocol</b><br>
-  <b><a href="#english">English</a> | <a href="#japanese">日本語</a></b>
+  <b><a href="#english">English</a> | <a href="#spanish">Español</a> | <a href="#japanese">日本語</a></b>
 </p>
 
 ---
@@ -33,10 +33,12 @@ Pull requests to this repository are welcome.
 - [Usage](#usage)
 - [License](#license)
 
+<a id="overview"></a>
 ### 🔍 Overview
 
 Gmail MCP is a server implementation that enables AI assistants to interact with Gmail through the MCP (Model Context Protocol). It provides tools for sending emails, managing drafts, reading emails, searching through your inbox, and managing Gmail labels.
 
+<a id="features"></a>
 ### ✨ Features
 
 - ✉️ Send emails and create drafts
@@ -45,6 +47,7 @@ Gmail MCP is a server implementation that enables AI assistants to interact with
 - 🏷️ Manage Gmail labels (create, update, delete)
 - 🔐 OAuth2.0 authentication with Gmail API
 
+<a id="Prerequisites"></a>
 ### 📋 Prerequisites
 
 - Python 3.11 or higher
@@ -52,6 +55,7 @@ Gmail MCP is a server implementation that enables AI assistants to interact with
 - Google Cloud Platform project with Gmail API enabled
 - [uv](https://github.com/astral-sh/uv) - Python package installer
 
+<a id="Setup"></a>
 ### 🚀 Setup
 
 1. Clone this repository
@@ -104,10 +108,12 @@ Please refer to your MCP client's official documentation for specific instructio
 uv run main.py
 ```
 
+<a id="Usage"></a>
 ### 💡 Usage
 
 The server can be used with any MCP-compatible client. On first run, it will prompt you to authenticate with your Gmail account.
 
+<a id="License"></a>
 ### 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -128,10 +134,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [使用方法](#使用方法)
 - [ライセンス](#ライセンス)
 
+
+<a id="概要"></a>
 ### 🔍 概要
 
 Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じてGmailを使用できるようにするサーバー実装です。メールの送信、下書きの管理、メールの読み取り、受信トレイの検索、Gmailラベルの管理などのツールを提供します。
 
+<a id="機能"></a>
 ### ✨ 機能
 
 - ✉️ メールの送信と下書き作成
@@ -140,6 +149,7 @@ Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じ�
 - 🏷️ Gmailラベルの管理（作成、更新、削除）
 - 🔐 Gmail APIとのOAuth2.0認証
 
+<a id="前提条件"></a>
 ### 📋 前提条件
 
 - Python 3.11以上
@@ -147,6 +157,7 @@ Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じ�
 - Gmail APIが有効化されたGoogle Cloud Platformプロジェクト
 - [uv](https://github.com/astral-sh/uv) - Pythonパッケージインストーラー
 
+<a id="セットアップ"></a>
 ### 🚀 セットアップ
 
 1. リポジトリをクローン
@@ -200,14 +211,118 @@ uv pip install -r requirements.txt
 uv run main.py
 ```
 
+<a id="使用方法"></a>
 ### 💡 使用方法
 
 このサーバーは、MCP互換のクライアントと共に使用できます。初回実行時には、Gmailアカウントで認証するよう促されます。
 
+<a id="ライセンス"></a>
 ### 📄 ライセンス
 
 このプロジェクトはMITライセンスの下で提供されています - 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 
+---
+
+<a id="spanish"></a>
+
+## 📋 Documentación en Español
+
+Las pull requests a este repositorio son bienvenidas.
+
+### 📖 Tabla de Contenidos
+- [Descripción General](#descripción-general)
+- [Características](#características)
+- [Requisitos Previos](#requisitos-previos)
+- [Configuración](#configuración)
+- [Uso](#uso)
+- [Licencia](#licencia)
+
+<a id="Descripción General"></a>
+### 🔍 Descripción General
+
+Gmail MCP es una implementación de servidor que permite a los asistentes de IA interactuar con Gmail a través del MCP (Model Context Protocol). Proporciona herramientas para enviar correos electrónicos, gestionar borradores, leer correos, buscar en tu bandeja de entrada y administrar etiquetas de Gmail.
+
+<a id="Características"></a>
+### ✨ Características
+
+- ✉️ Enviar correos y crear borradores
+- 📬 Leer y buscar correos
+- 🗑️ Eliminar correos
+- 🏷️ Gestionar etiquetas de Gmail (crear, actualizar, eliminar)
+- 🔐 Autenticación OAuth2.0 con la API de Gmail
+
+<a id="Requisitos Previos"></a>
+### 📋 Requisitos Previos
+
+- Python 3.11 o superior
+- Cuenta de Gmail
+- Proyecto en Google Cloud Platform con la API de Gmail habilitada
+- [uv](https://github.com/astral-sh/uv) - Instalador de paquetes Python
+
+<a id="Configuración"></a>
+### 🚀 Configuración
+
+1. Clonar este repositorio
+```bash
+git clone https://github.com/ykuchiki/gmail-mcp.git
+cd gmail-mcp
+```
+
+2. Crear y activar un entorno virtual
+```bash
+uv init
+```
+
+3. Instalar dependencias
+```bash
+uv pip install -r requirements.txt
+```
+
+4. Configurar credenciales OAuth
+   - Crear un directorio llamado credentials en la raíz del proyecto
+   - Crear un proyecto en [Google Cloud Console](https://console.cloud.google.com/)
+   - Habilitar la API de Gmail
+   - Crear credenciales OAuth
+   - Agregar la siguiente URI a las **URIs de redirección autorizadas**:
+     ```
+     http://localhost:8080/
+     ```
+   - Descargar el archivo JSON de credenciales y guardarlo como `credentials/client_secret_gmail_oauth.json`
+
+5. Agregar servidor MCP
+Por favor, consulta la documentación oficial de tu cliente MCP para instrucciones específicas. Asegúrate de ajustar la ruta según tu entorno.
+```json
+{
+    "mcpServers": {
+        "gmail-mcp": {
+            "command": "uv",
+            "args": [
+                "--directory",
+                "/path/to/your/gmail-mcp/src",
+                "run",
+                "main.py"
+            ]
+        }
+    }
+}
+```
+
+6. Ejecutar el servidor
+```bash
+uv run main.py
+```
+
+<a id="Uso"></a>
+### 💡 Uso
+
+El servidor puede ser utilizado con cualquier cliente compatible con MCP. En la primera ejecución, te pedirá que te autentiques con tu cuenta de Gmail.
+
+<a id="Licencia"></a>
+### 📄 Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT - consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
 
 ### TODO
 - [x] 基本機能実装

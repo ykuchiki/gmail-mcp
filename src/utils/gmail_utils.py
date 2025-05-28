@@ -32,7 +32,7 @@ def load_credentials(config_path: str, cred_path: str, oauth_path: str, scopes: 
             # トークン情報がないか期限切れで、リフレッシュトークンがない場合は認証サーバーにアクセスして認証
             flow = InstalledAppFlow.from_client_secrets_file(oauth_path, scopes)
             # 認証サーバーにアクセスして認証
-            creds = flow.run_local_server(port=8080, access_type='offline', propmt='consent')
+            creds = flow.run_local_server(port=8080, access_type='offline', prompt='consent')
         with open(cred_path, "w") as token:
             token.write(creds.to_json())
     global service

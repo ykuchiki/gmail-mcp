@@ -148,6 +148,7 @@ Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じ�
 - 🗑️ メールの削除
 - 🏷️ Gmailラベルの管理（作成、更新、削除）
 - 🔐 Gmail APIとのOAuth2.0認証
+\- 📎 添付ファイル送信・下書き（複数可, ローカルファイルパス）
 
 <a id="前提条件"></a>
 ### 📋 前提条件
@@ -215,6 +216,38 @@ uv run main.py
 ### 💡 使用方法
 
 このサーバーは、MCP互換のクライアントと共に使用できます。初回実行時には、Gmailアカウントで認証するよう促されます。
+
+#### 添付ファイルを付けて送信 / 下書き作成
+
+`attachments` 引数でローカルファイルのパスを指定します（複数可・絶対パス推奨）。
+
+例: 送信
+```json
+{
+  "to": ["someone@example.com"],
+  "subject": "レポート送付の件",
+  "body": "ご確認ください。",
+  "attachments": [
+    "/Users/you/Documents/report.pdf",
+    "/Users/you/Pictures/logo.png"
+  ]
+}
+```
+
+例: 下書き作成
+```json
+{
+  "to": ["someone@example.com"],
+  "subject": "資料",
+  "body": "添付しています。",
+  "attachments": ["/absolute/path/to/file.txt"]
+}
+```
+
+注意事項:
+- 合計サイズは約24MBを上限とし、それを超える場合はエラーになります（Gmailの25MB制限に対する安全余裕）。
+- MIMEタイプは自動推定します。判別できない場合は`application/octet-stream`として送信します。
+- ファイルが存在しない/読み取り不可の場合はエラーになります。
 
 <a id="ライセンス"></a>
 ### 📄 ライセンス

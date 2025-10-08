@@ -30,6 +30,7 @@ async def send_email(args: Dict[str, Any]) -> str:
             - bcc (List[str], optional): BCC先のアドレスリスト。
             - in_reply_to (str, optional): 返信元メッセージID。
             - threadid (str, optional): スレッドID。
+            - attachments (List[str], optional): 添付ファイルのローカルパス（複数可、絶対パス推奨）。
 
     Returns:
         str: 送信結果メッセージ (例: "Email sent: メッセージID").
@@ -41,6 +42,7 @@ async def send_email(args: Dict[str, Any]) -> str:
         "cc": args.get("cc"),                   # cc(任意)
         "bcc": args.get("bcc"),                 # bcc(任意)
         "in_reply_to": args.get("in_reply_to"), # 返信元のメッセージID(任意)
+        "attachments": args.get("attachments"),  # 添付ファイル(任意)
     }).encode("utf-8")
     # メッセージをBase64でエンコード
     raw = base64.urlsafe_b64encode(msg).decode().rstrip("=")
@@ -67,6 +69,7 @@ async def create_draft(args: Dict[str, Any]) -> str:
             - bcc (List[str], optional): BCC先。
             - in_reply_to (str, optional): 返信元ID。
             - threadid (str, optional): スレッドID。
+            - attachments (List[str], optional): 添付ファイルのローカルパス（複数可、絶対パス推奨）。
 
     Returns:
         str: 下書き作成結果メッセージ (例: "Draft created: 下書きID").
@@ -78,6 +81,7 @@ async def create_draft(args: Dict[str, Any]) -> str:
         "cc": args.get("cc"),
         "bcc": args.get("bcc"),
         "in_reply_to": args.get("in_reply_to"),
+        "attachments": args.get("attachments"),
     }).encode("utf-8")
     raw = base64.urlsafe_b64encode(msg).decode().rstrip("=")
     # 下書きを作成

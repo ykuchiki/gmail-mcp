@@ -1,7 +1,12 @@
 import re
 import os
 import base64
+import mimetypes
 from typing import List, Dict, Any, Optional
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
@@ -65,7 +70,7 @@ def validate_email(email: str) -> bool:
 def create_email_message(args: Dict[str, Any]) -> str:
     """
     引数で渡されたメール情報をもとに
-    SMTPで送信可能なプレーンテキスト形式のMIMEメールを文字列で構築する
+    SMTPで送信可能なMIMEメールを文字列で構築する
 
     args のキー:
         - from: 送信者アドレス (str)
@@ -75,9 +80,10 @@ def create_email_message(args: Dict[str, Any]) -> str:
         - in_reply_to: メッセージ ID (Optional[str])
         - subject: 件名 (str)
         - body: 本文 (str)
+        - attachments: 添付ファイルパスのリスト (Optional[List[str]])
 
     return:
-        - プレーンテキスト形式のMIMEメール本文 (str)
+        - RFC 5322 形式のMIMEメール本文 (str)
     """
     # 件名をエンコード
     # args.get("subject", ""): argsという辞書の中からsubjectというキーの値を取得
@@ -90,23 +96,74 @@ def create_email_message(args: Dict[str, Any]) -> str:
         if not validate_email(addr):
             raise ValueError(f"Invalid email address: {addr}")
 
-    # ヘッダ部の組み立て
-    headers: List[str] = []
-    headers.append(f"From: {args.get('from', 'me')}")
-    headers.append(f"To: {', '.join(to_list)}")
-    if args.get("cc"):
-        headers.append(f"Cc: {', '.join(args['cc'])}")
-    if args.get("bcc"):
-        headers.append(f"Bcc: {', '.join(args['bcc'])}")
-    headers.append(f"Subject: {subject}")
-    if args.get("in_reply_to"):
-        headers.append(f"In-Reply-To: {args['in_reply_to']}")
-        headers.append(f"References: {args['in_reply_to']}")
-    headers.append("MIME-Version: 1.0")
-    headers.append("Content-Type: text/plain; charset=UTF-8")
-    headers.append("Content-Transfer-Encoding: 7bit")
+    attachments: Optional[List[str]] = args.get("attachments")
 
-    # ヘッダー本文をCRLF区切りで結合
-    message = "\r\n".join(headers) + "\r\n\r\n" + args.get("body", "")
-    return message
+    # 添付ファイルなし: 従来どおりプレーンテキストを返す（後方互換）
+    if not attachments:
+        headers: List[str] = []
+        headers.append(f"From: {args.get('from', 'me')}")
+        headers.append(f"To: {', '.join(to_list)}")
+        if args.get("cc"):
+            headers.append(f"Cc: {', '.join(args['cc'])}")
+        if args.get("bcc"):
+            headers.append(f"Bcc: {', '.join(args['bcc'])}")
+        headers.append(f"Subject: {subject}")
+        if args.get("in_reply_to"):
+            headers.append(f"In-Reply-To: {args['in_reply_to']}")
+            headers.append(f"References: {args['in_reply_to']}")
+        headers.append("MIME-Version: 1.0")
+        headers.append("Content-Type: text/plain; charset=UTF-8")
+        headers.append("Content-Transfer-Encoding: 7bit")
+
+        message = "\r\n".join(headers) + "\r\n\r\n" + args.get("body", "")
+        return message
+
+    # 添付ファイルあり: multipart/mixed を構築
+    if not isinstance(attachments, list):
+        raise ValueError("'attachments' must be a list of file paths")
+
+    # 合計サイズ上限（約24MB）チェック
+    total_bytes = 0
+    for path in attachments:
+        if not isinstance(path, str) or not os.path.isfile(path):
+            raise ValueError(f"Attachment not found: {path}")
+        try:
+            total_bytes += os.path.getsize(path)
+        except OSError:
+            raise ValueError(f"Cannot access attachment: {path}")
+    max_bytes = 24 * 1024 * 1024
+    if total_bytes > max_bytes:
+        raise ValueError(f"Attachments too large: total {total_bytes} bytes exceeds limit {max_bytes} bytes")
+
+    msg = MIMEMultipart('mixed')
+    msg['From'] = args.get('from', 'me')
+    msg['To'] = ', '.join(to_list)
+    if args.get('cc'):
+        msg['Cc'] = ', '.join(args['cc'])
+    if args.get('bcc'):
+        msg['Bcc'] = ', '.join(args['bcc'])
+    msg['Subject'] = subject
+    if args.get('in_reply_to'):
+        msg['In-Reply-To'] = args['in_reply_to']
+        msg['References'] = args['in_reply_to']
+
+    body_text = args.get('body', '')
+    msg.attach(MIMEText(body_text, 'plain', 'utf-8'))
+
+    for path in attachments:
+        ctype, _ = mimetypes.guess_type(path)
+        if not ctype:
+            ctype = 'application/octet-stream'
+        maintype, subtype = ctype.split('/', 1)
+        with open(path, 'rb') as f:
+            data = f.read()
+        part = MIMEBase(maintype, subtype)
+        part.set_payload(data)
+        encoders.encode_base64(part)
+        filename = os.path.basename(path)
+        # RFC2231 形式でUTF-8ファイル名を付与
+        part.add_header('Content-Disposition', 'attachment', filename=("utf-8", '', filename))
+        msg.attach(part)
+
+    return msg.as_string()
     

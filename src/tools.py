@@ -200,13 +200,17 @@ async def search_emails(args: Dict[str, Any]) -> Dict[str, Any]:
             if exception:
                 # 個別失敗は飛ばす
                 return
-            hdrs = {h["name"]: h["value"] for h in response["payload"]["headers"]}
+            hdrs = {
+                h["name"].lower(): h["value"]
+                for h in response.get("payload", {}).get("headers", [])
+                if "name" in h and "value" in h
+            }
             results.append({
                 "id": response["id"],
                 "threadId": response.get("threadId"),
-                "Subject": hdrs.get("Subject", ""),
-                "From": hdrs.get("From", ""),
-                "Date": hdrs.get("Date", ""),
+                "Subject": hdrs.get("subject", ""),
+                "From": hdrs.get("from", ""),
+                "Date": hdrs.get("date", ""),
             })
 
         for msg_id in ids:

@@ -9,7 +9,8 @@ import utils.gmail_utils as gmail_utils
 from tools import (
     send_email, create_draft, read_email, search_emails, delete_email,
     modify_label, create_label_tool, delete_label_tool, list_labels_tool,
-    get_or_create_label_tool, update_label_tool, find_label_by_name_tool
+    get_or_create_label_tool, update_label_tool, find_label_by_name_tool,
+    list_filters_tool, create_filter_tool, update_filter_tool, delete_filter_tool
 )
 
 # 設定
@@ -17,7 +18,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 CREDENTIALS_DIR = BASE_DIR / "credentials"
 OAUTH_KEYS = os.getenv("GMAIL_OAUTH_PATH", str(CREDENTIALS_DIR / "client_secret_gmail_oauth.json"))
 CRED_PATH = os.getenv("GMAIL_CREDENTIALS_PATH", str(CREDENTIALS_DIR / "credentials.json"))
-SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.modify",
+    "https://www.googleapis.com/auth/gmail.settings.basic"
+]
 
 def create_server() -> FastMCP:
     """MCP サーバーの作成とツール登録"""
@@ -36,7 +40,10 @@ def create_server() -> FastMCP:
     server.tool()(get_or_create_label_tool)
     server.tool()(update_label_tool)
     server.tool()(find_label_by_name_tool)
-    
+    server.tool()(list_filters_tool)
+    server.tool()(create_filter_tool)
+    server.tool()(update_filter_tool)
+    server.tool()(delete_filter_tool)
     return server
 
 def init_gmail_credentials():

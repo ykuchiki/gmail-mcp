@@ -36,7 +36,7 @@ Pull requests to this repository are welcome.
 <a id="overview"></a>
 ### 🔍 Overview
 
-Gmail MCP is a server implementation that enables AI assistants to interact with Gmail through the MCP (Model Context Protocol). It provides tools for sending emails, managing drafts, reading emails, searching through your inbox, and managing Gmail labels.
+Gmail MCP is a server implementation that enables AI assistants to interact with Gmail through the MCP (Model Context Protocol). It provides tools for sending emails, managing drafts, reading emails, searching through your inbox, managing Gmail labels and manageing filters.
 
 <a id="features"></a>
 ### ✨ Features
@@ -45,6 +45,7 @@ Gmail MCP is a server implementation that enables AI assistants to interact with
 - 📬 Read and search emails 
 - 🗑️ Delete emails
 - 🏷️ Manage Gmail labels (create, update, delete)
+- 🗂️ Manage Gmail filters (create, update, delete)
 - 🔐 OAuth2.0 authentication with Gmail API
 
 <a id="Prerequisites"></a>
@@ -138,7 +139,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <a id="概要"></a>
 ### 🔍 概要
 
-Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じてGmailを使用できるようにするサーバー実装です。メールの送信、下書きの管理、メールの読み取り、受信トレイの検索、Gmailラベルの管理などのツールを提供します。
+Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じてGmailを使用できるようにするサーバー実装です。メールの送信、下書きの管理、メールの読み取り、受信トレイの検索、Gmailラベルの管理、フィルタの管理などのツールを提供します。
 
 <a id="機能"></a>
 ### ✨ 機能
@@ -147,6 +148,7 @@ Gmail MCPは、AIアシスタントがMCP（Model Context Protocol）を通じ�
 - 📬 メールの読み取りと検索
 - 🗑️ メールの削除
 - 🏷️ Gmailラベルの管理（作成、更新、削除）
+- 🗂️ フィルタの管理（作成、更新、削除）
 - 🔐 Gmail APIとのOAuth2.0認証
 \- 📎 添付ファイル送信・下書き（複数可, ローカルファイルパス）
 

@@ -1,6 +1,7 @@
 """
 main.py - Gmail MCP Serverエントリーポイント
 """
+import sys
 from dotenv import load_dotenv
 
 from server import create_server, init_gmail_credentials
@@ -17,7 +18,7 @@ def main():
     server = create_server()
     
     # サーバー起動
-    print("[INFO] Starting Gmail MCP server...")
+    print("[INFO] Starting Gmail MCP server...", file=sys.stderr)
     server.run(transport="stdio")
 
 if __name__ == "__main__":
